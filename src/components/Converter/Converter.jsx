@@ -35,7 +35,7 @@ export const Converter = props => {
     if (eurSelect === 'USD') {
       setEur(((eurInput * valueUSD) / valueEUR).toFixed(2));
     }
-  }, [usdInput, eurInput, usdSelect, eurSelect]);
+  }, [usdInput, eurInput, usdSelect, eurSelect, valueEUR, valueUSD]);
 
   const changeInput = e => {
     if (e.target.name === 'USD') {
