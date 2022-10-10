@@ -21,19 +21,19 @@ export const Converter = props => {
       setUsd(usdInput);
     }
     if (usdSelect === 'UAH') {
-      setUsd((usdInput * valueUSD).toFixed(2));
+      setUsd((usdInput / valueUSD).toFixed(2));
     }
     if (usdSelect === 'EUR') {
-      setUsd(((usdInput * valueEUR) / valueUSD).toFixed(2));
+      setUsd(((usdInput * valueUSD) / valueEUR).toFixed(2));
     }
     if (eurSelect === 'EUR') {
       setEur(eurInput);
     }
     if (eurSelect === 'UAH') {
-      setEur((eurInput * valueEUR).toFixed(2));
+      setEur((eurInput / valueEUR).toFixed(2));
     }
     if (eurSelect === 'USD') {
-      setEur(((eurInput * valueUSD) / valueEUR).toFixed(2));
+      setEur(((eurInput * valueEUR) / valueUSD).toFixed(2));
     }
   }, [usdInput, eurInput, usdSelect, eurSelect, valueEUR, valueUSD]);
 
