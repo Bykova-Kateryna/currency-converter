@@ -57,7 +57,7 @@ export const Converter = props => {
       );
       return;
     }
-  }, [firstInput, secondInput, firstInputSelect, secondInputSelect]);
+  }, [firstInput, secondInput, firstInputSelect, secondInputSelect, courses]);
   const changeInput = e => {
     if (e.target.name === 'firstInput') {
       setFirstInput(e.target.value);
