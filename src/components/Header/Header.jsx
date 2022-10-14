@@ -12,43 +12,49 @@ import {
 const URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
 export const Header = () => {
-  const [courseUSD, setCourseUSD] = useState([]);
-  const [courseEUR, setCourseEUR] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const date = new Date()
+
 
   useEffect(() => {
     fetch(`${URL}`)
       .then(response => response.json())
       .then(data => {
-        setCourseUSD(data.find(d => d.cc === 'USD'));
-        setCourseEUR(data.find(d => d.cc === 'EUR'));
+        setCourses([
+          data.find(d => d.cc === 'USD'),
+          data.find(d => d.cc === 'EUR'),
+        ]);
       })
       .catch(error => console.log(error));
   }, []);
 
   return (
-    courseUSD.length !== 0 &&
-    courseEUR.length !== 0 && (
+    courses.length !== 0 && (
       <>
         <HeaderSection>
-          <HeaderTittle>
-            Exchange rate for {courseUSD.exchangedate}
-          </HeaderTittle>
+          <HeaderTittle>Exchange rate for {date.getDate()}.{date.getMonth() + 1}.{date.getFullYear()}</HeaderTittle>
           <HeaderTable>
             <thead>
               <tr>
-                <HeaderTableHead>1 {courseUSD.cc}</HeaderTableHead>
-                <HeaderTableHead>1 {courseEUR.cc}</HeaderTableHead>
+                {courses.map(course => (
+                  <HeaderTableHead key={course.r030}>
+                    1 {course.cc}
+                  </HeaderTableHead>
+                ))}
               </tr>
             </thead>
             <tbody>
               <tr>
-                <HeaderTableBody>{courseUSD.rate} UAH</HeaderTableBody>
-                <HeaderTableBody>{courseEUR.rate} UAH</HeaderTableBody>
+                {courses.map(course => (
+                  <HeaderTableBody key={course.r030}>
+                    {course.rate} UAH
+                  </HeaderTableBody>
+                ))}
               </tr>
             </tbody>
           </HeaderTable>
         </HeaderSection>
-        <Converter usd={courseUSD.rate} eur={courseEUR.rate} />
+        <Converter courses={courses} />
       </>
     )
   );

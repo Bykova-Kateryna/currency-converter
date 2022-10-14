@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   ConverterSection,
   ConverterInputSection,
@@ -7,52 +7,71 @@ import {
 } from './Converter.styled';
 
 export const Converter = props => {
-  const [usdInput, setUsdInput] = useState(0);
-  const [eurInput, setEurInput] = useState(0);
-  const [usdSelect, setUsdSelect] = useState('USD');
-  const [eurSelect, setEurSelect] = useState('EUR');
-  const [usd, setUsd] = useState('__,__');
-  const [eur, setEur] = useState('__,__');
-  const valueUSD = props.usd;
-  const valueEUR = props.eur;
+  const courses = props.courses;
+
+  const [firstInput, setFirstInput] = useState(0);
+  const [secondInput, setSecondInput] = useState(0);
+  const [firstInputSelect, setFirstInputSelect] = useState('UAH');
+  const [secondInputSelect, setSecondInputSelect] = useState('UAH');
 
   useEffect(() => {
-    if (usdSelect === 'USD') {
-      setUsd(usdInput);
+    if (firstInputSelect === 'UAH') {
+      setSecondInput(
+        Number(
+          (
+            firstInput *
+            courses.find(course => course.cc === secondInputSelect)?.rate
+          ).toFixed(2)
+        ) || firstInput
+      );
+      return;
     }
-    if (usdSelect === 'UAH') {
-      setUsd((usdInput / valueUSD).toFixed(2));
+    if (secondInputSelect === 'UAH') {
+      setFirstInput(
+        Number(
+          (
+            secondInput *
+            courses.find(course => course.cc === firstInputSelect)?.rate
+          ).toFixed(2)
+        ) || secondInput
+      );
+      return;
     }
-    if (usdSelect === 'EUR') {
-      setUsd(((usdInput * valueUSD) / valueEUR).toFixed(2));
+    if (firstInputSelect !== 'UAH') {
+      setSecondInput(
+        (
+          (firstInput *
+            courses.find(course => course.cc === firstInputSelect)?.rate) /
+          courses.find(course => course.cc === secondInputSelect)?.rate
+        ).toFixed(2)
+      );
+      return;
     }
-    if (eurSelect === 'EUR') {
-      setEur(eurInput);
+    if (secondInputSelect !== 'UAH') {
+      setFirstInput(
+        (
+          (secondInput *
+            courses.find(course => course.cc === secondInputSelect)?.rate) /
+          courses.find(course => course.cc === firstInputSelect)?.rate
+        ).toFixed(2)
+      );
+      return;
     }
-    if (eurSelect === 'UAH') {
-      setEur((eurInput / valueEUR).toFixed(2));
-    }
-    if (eurSelect === 'USD') {
-      setEur(((eurInput * valueEUR) / valueUSD).toFixed(2));
-    }
-  }, [usdInput, eurInput, usdSelect, eurSelect, valueEUR, valueUSD]);
-
+  }, [firstInput, secondInput, firstInputSelect, secondInputSelect]);
   const changeInput = e => {
-    if (e.target.name === 'USD') {
-      setUsdInput(e.target.value);
+    if (e.target.name === 'firstInput') {
+      setFirstInput(e.target.value);
+      return;
     }
-    if (e.target.name === 'EUR') {
-      setEurInput(e.target.value);
-    }
+    setSecondInput(e.target.value);
   };
 
   const changeSelect = e => {
-    if (e.target.name === 'USD') {
-      setUsdSelect(e.target.value);
+    if (e.target.name === 'firstInput') {
+      setFirstInputSelect(e.target.value);
+      return;
     }
-    if (e.target.name === 'EUR') {
-      setEurSelect(e.target.value);
-    }
+    setSecondInputSelect(e.target.value);
   };
 
   return (
@@ -61,46 +80,50 @@ export const Converter = props => {
         <ConverterInputSection>
           <input
             onChange={changeInput}
+            value={firstInput}
             type="number"
-            name="USD"
-            id="USD"
-            value={usdInput}
+            name="firstInput"
             min="0"
           />
           <ConverterSelect
-            name="USD"
-            id="USD"
+            defaultValue={firstInputSelect}
+            name="firstInput"
             onChange={changeSelect}
-            value={usdSelect}
           >
-            <option value="USD">USD</option>
+            {courses.map(course => (
+              <option value={course.cc} key={course.r030}>
+                {course.cc}
+              </option>
+            ))}
             <option value="UAH">UAH</option>
-            <option value="EUR">EUR</option>
           </ConverterSelect>
-          <label htmlFor="USD">&#160; = {usd} USD</label>
         </ConverterInputSection>
         <ConverterInputSection>
           <input
             onChange={changeInput}
+            value={secondInput}
             type="number"
-            name="EUR"
-            id="EUR"
-            value={eurInput}
+            name="secondInput"
             min="0"
           />
           <ConverterSelect
-            name="EUR"
-            id="EUR"
+            name="secondInput"
             onChange={changeSelect}
-            value={eurSelect}
+            defaultValue={secondInputSelect}
           >
-            <option value="USD">USD</option>
+            {courses.map(course => (
+              <option value={course.cc} key={course.r030}>
+                {course.cc}
+              </option>
+            ))}
             <option value="UAH">UAH</option>
-            <option value="EUR">EUR</option>
           </ConverterSelect>
-          <label htmlFor="EUR">&#160; = {eur} EUR</label>
         </ConverterInputSection>
       </form>
     </ConverterSection>
   );
 };
+
+Converter.propTypes = {
+  courses: PropTypes.array,
+}
